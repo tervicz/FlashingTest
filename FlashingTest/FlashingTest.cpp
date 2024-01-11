@@ -5,7 +5,6 @@
 
 const int NUMBER_OF_WINDOWS = 3;
 
-HWND flashTarget;
 static std::vector<HWND> windows;
 
 void FlashTaskbarIcon(const int count, HWND hwdn) {
