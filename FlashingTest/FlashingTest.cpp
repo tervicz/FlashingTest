@@ -54,9 +54,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	for (auto i = 0; i < NUMBER_OF_WINDOWS; i++) {
 		std::wstringstream name;
 		name << "Window " << i;
-		windows.push_back(CreateWindowEx(0, L"MyWindowClass", name.str().c_str(), WS_OVERLAPPEDWINDOW, 100 + i * 300, 100, 400, 300,
+		windows.push_back(CreateWindowEx(0, L"MyWindowClass", name.str().c_str(), WS_OVERLAPPEDWINDOW, 100 + i * 400, 100, 400, 300,
 			nullptr, nullptr, GetModuleHandle(nullptr), nullptr));
 	}
+
+	// Set window title to guide user for repro steps
+	SetWindowText(windows[0], L"(1) Info");
+	SetWindowText(windows[1], L"(2) Minimize");
+	SetWindowText(windows[2], L"(3) Min+Close");
 
 	// win flash button
 	HWND btn = CreateWindow(
@@ -69,6 +74,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		30,               // h
 		windows[0],       // 1st window is parent
 		(HMENU)1001,      // Button identifier (used in WM_COMMAND)
+		GetModuleHandle(nullptr),
+		nullptr);
+
+	std::wstring text_box_text = L"1. Minimize other windows (2) (3)";
+	text_box_text += L"\r\n2. Close window (3) from Windows taskbar";
+	text_box_text += L"\r\n3. Click on 'Flash window' button in (1)";
+	text_box_text += L"\r\n";
+	text_box_text += L"\r\nTaskbar icon should only flash.";
+	text_box_text += L"\r\nThe bug is window (2) activates which it should not.";
+
+	// repro steps description
+	HWND text_box = CreateWindow(
+		L"EDIT",          // class;
+		text_box_text.c_str(),  // txt
+		WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL,
+		10,               // x
+		50,               // y
+		370,              // w
+		230,              // h
+		windows[0],       // 1st window is parent
+		(HMENU)1002,      // Button identifier (used in WM_COMMAND)
 		GetModuleHandle(nullptr),
 		nullptr);
 
